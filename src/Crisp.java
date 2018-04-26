@@ -31,24 +31,36 @@ public class Crisp extends JFrame{
 
     public Crisp() {
 
+        // --- ~ init ~ --- //
+        p = new JPanel();
+        JLabel chooseSize = new JLabel("~ Size:");
+        p.add(chooseSize);
+        JComboBox<Integer> sizeBox = new JComboBox<>();
+        p.add(sizeBox);
+        JLabel preview = new JLabel(new ImageIcon(sprite));
+        p.add(preview);
+        JButton generate = new JButton("Generate Sprite");
+        p.add(generate);
+        JLabel chooseFont = new JLabel("~ Pick a Font:");
+        p.add(chooseFont);
+        JComboBox<String> fontBox = new JComboBox<>();
+        p.add(fontBox);
+        JLabel credits = new JLabel();
+        p.add(credits);
+
         // --- ~ settings jframe ~ --- //
         setResizable(false);
         setTitle("~ --- Xiangsu --- ~");
-        setBounds(0, 0, 320, 180);
+        setBounds(0, 0, 480, 180);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // --- ~ create jpanel ~ --- //
-        p = new JPanel();
         p.setLayout(null);
         setContentPane(p);
 
         // --- ~ pick a size ~ --- //
-        JLabel chooseSize = new JLabel("~ Size:");
         chooseSize.setBounds(205, 10, 120, 20);
-        p.add(chooseSize);
-
-        JComboBox<Integer> sizeBox = new JComboBox<>();
         sizeBox.setBounds(200, 30, 110, 20);
         sizeBox.setEditable(true);
         // ~ adds possible font sizes
@@ -56,23 +68,32 @@ public class Crisp extends JFrame{
             sizeBox.addItem(s);
         }
         sizeBox.setEditable(false);
+        sizeBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sprite = createSprite((String) fontBox.getSelectedItem(), (int) sizeBox.getSelectedItem());
+                BufferedImage rescaled = getScaledImage(sprite, 460,30);
+                preview.setIcon(new ImageIcon(rescaled));
+                preview.setBounds(10, 60, rescaled.getWidth(), rescaled.getHeight());
+                generate.setBounds(10, 65 + rescaled.getHeight(), 300, 40);
+                setBounds(getX(), getY(), 480, 130 + rescaled.getHeight());
+            }
+        });
         sizeBox.setSelectedItem(8);
-        p.add(sizeBox);
 
-        // --- ~ add a preview ~ --- //
-        JLabel preview = new JLabel(new ImageIcon(sprite));
-        preview.setBounds(10, 80, 300, 40);
-        p.add(preview);
+        // --- ~ generate sprite ~ --- //
+        generate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // ~ save sprite
+                saveFile(sprite);
+            }
+        });
+        generate.setBounds(10, 110, 300, 40);
 
         // --- ~ pick a font ~ --- //
-        JLabel chooseFont = new JLabel("~ Pick a Font:");
         chooseFont.setBounds(15, 10, 160, 20);
-        p.add(chooseFont);
-
-        JComboBox<String> fontBox = new JComboBox<>();
         fontBox.setBounds(10, 30, 160, 20);
         fontBox.setEditable(true);
-        fontBox.addItem("~");
+        fontBox.setSelectedItem("Monospaced");
         // ~ gets all the local fonts on your computer
         GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Font[] fonts = e.getAllFonts();
@@ -81,23 +102,15 @@ public class Crisp extends JFrame{
         fontBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 sprite = createSprite((String) fontBox.getSelectedItem(), (int) sizeBox.getSelectedItem());
+                BufferedImage rescaled = getScaledImage(sprite, 460,30);
+                preview.setIcon(new ImageIcon(rescaled));
+                preview.setBounds(10, 60, rescaled.getWidth(), rescaled.getHeight());
+                generate.setBounds(10, 65 + rescaled.getHeight(), 300, 40);
+                setBounds(getX(), getY(), 480, 130 + rescaled.getHeight());
             }
         });
-        p.add(fontBox);
-
-        // --- ~ generate sprite ~ --- //
-        JButton fried = new JButton("Generate Sprite");
-        fried.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // ~ save sprite
-                saveFile(sprite);
-            }
-        });
-        fried.setBounds(10, 80, 300, 40);
-        p.add(fried);
 
         // --- ~ little self-promo ~ --- //
-        JLabel credits = new JLabel();
         String url = "http://www.breachalk.com";
         credits.setText("Made by Breachalk");
         credits.addMouseListener(new MouseAdapter() {
@@ -118,9 +131,8 @@ public class Crisp extends JFrame{
                 }
             }
         });
-        credits.setBounds(10, 130, 295, 20);
+        credits.setBounds(150, 110, 300, 40);
         credits.setHorizontalAlignment(SwingConstants.RIGHT);
-        p.add(credits);
 
         setVisible(true);
     }
@@ -212,5 +224,25 @@ public class Crisp extends JFrame{
             }
             JOptionPane.showMessageDialog(this, "Font saved at " + file.getAbsolutePath(), "~ file saved", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    // ~ ----- -- - ----- - -- ----- ~ //
+
+    private BufferedImage getScaledImage(BufferedImage image, int maxW, int lineHeight) {
+        int scale = (int) Math.ceil((float) lineHeight / image.getHeight());
+        int rows = (int) Math.ceil((float) image.getWidth() * scale /  maxW);
+        int newW = image.getWidth() * scale;
+
+        BufferedImage resized = new BufferedImage(maxW, lineHeight * rows, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = resized.createGraphics();
+
+        g.setColor(Color.black);
+        g.fillRect(0,0, maxW, lineHeight * rows);
+        for (int i = 0; i < rows; i++) {
+            g.drawImage(image, -maxW * i, lineHeight * i, newW, lineHeight, null);
+        }
+        g.dispose();
+
+        return resized;
     }
 }
