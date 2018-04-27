@@ -27,9 +27,13 @@ public class Crisp extends JFrame{
     }
 
     private JPanel p;
+    private Icon icon;
     private BufferedImage sprite =  new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
 
     public Crisp() {
+        try {
+            icon = new ImageIcon(ImageIO.read(new File("res/icon.png")));
+        } catch (IOException e) {/* Doesn't matter... */}
 
         // --- ~ init ~ --- //
         p = new JPanel();
@@ -47,6 +51,19 @@ public class Crisp extends JFrame{
         p.add(fontBox);
         JLabel credits = new JLabel();
         p.add(credits);
+
+        // --- ~ action listener ~ --- //
+        ActionListener al = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sprite = createSprite((String) fontBox.getSelectedItem(), (int) sizeBox.getSelectedItem());
+                BufferedImage rescaled = getScaledImage(sprite, 460,30);
+                preview.setIcon(new ImageIcon(rescaled));
+                preview.setBounds(10, 60, rescaled.getWidth(), rescaled.getHeight());
+                generate.setBounds(10, 65 + rescaled.getHeight(), 300, 40);
+                credits.setBounds(150, 65 + rescaled.getHeight(), 300, 40);
+                setBounds(getX(), getY(), 480, 130 + rescaled.getHeight());
+            }
+        };
 
         // --- ~ settings jframe ~ --- //
         setResizable(false);
@@ -68,16 +85,7 @@ public class Crisp extends JFrame{
             sizeBox.addItem(s);
         }
         sizeBox.setEditable(false);
-        sizeBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                sprite = createSprite((String) fontBox.getSelectedItem(), (int) sizeBox.getSelectedItem());
-                BufferedImage rescaled = getScaledImage(sprite, 460,30);
-                preview.setIcon(new ImageIcon(rescaled));
-                preview.setBounds(10, 60, rescaled.getWidth(), rescaled.getHeight());
-                generate.setBounds(10, 65 + rescaled.getHeight(), 300, 40);
-                setBounds(getX(), getY(), 480, 130 + rescaled.getHeight());
-            }
-        });
+        sizeBox.addActionListener(al);
         sizeBox.setSelectedItem(8);
 
         // --- ~ generate sprite ~ --- //
@@ -87,28 +95,18 @@ public class Crisp extends JFrame{
                 saveFile(sprite);
             }
         });
-        generate.setBounds(10, 110, 300, 40);
+        generate.setBounds(10, 65 + preview.getHeight(), 300, 40);
 
         // --- ~ pick a font ~ --- //
         chooseFont.setBounds(15, 10, 160, 20);
         fontBox.setBounds(10, 30, 160, 20);
         fontBox.setEditable(true);
-        fontBox.setSelectedItem("Monospaced");
         // ~ gets all the local fonts on your computer
         GraphicsEnvironment e = GraphicsEnvironment.getLocalGraphicsEnvironment();
         Font[] fonts = e.getAllFonts();
         for (Font font: fonts) fontBox.addItem(font.getFontName());
         fontBox.setEditable(false);
-        fontBox.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                sprite = createSprite((String) fontBox.getSelectedItem(), (int) sizeBox.getSelectedItem());
-                BufferedImage rescaled = getScaledImage(sprite, 460,30);
-                preview.setIcon(new ImageIcon(rescaled));
-                preview.setBounds(10, 60, rescaled.getWidth(), rescaled.getHeight());
-                generate.setBounds(10, 65 + rescaled.getHeight(), 300, 40);
-                setBounds(getX(), getY(), 480, 130 + rescaled.getHeight());
-            }
-        });
+        fontBox.addActionListener(al);
 
         // --- ~ little self-promo ~ --- //
         String url = "http://www.breachalk.com";
@@ -131,7 +129,7 @@ public class Crisp extends JFrame{
                 }
             }
         });
-        credits.setBounds(150, 110, 300, 40);
+        credits.setBounds(150, 65 + preview.getHeight(), 300, 40);
         credits.setHorizontalAlignment(SwingConstants.RIGHT);
 
         setVisible(true);
@@ -200,7 +198,8 @@ public class Crisp extends JFrame{
                 File file = getSelectedFile();
                 if (file.exists() && getDialogType() == SAVE_DIALOG) {
                     int result = JOptionPane.showConfirmDialog(this,
-                            "The file " + file.getName() + " already exists. Want to replace it?", "~ overwrite file", JOptionPane.YES_NO_CANCEL_OPTION);
+                            "~ the file " + file.getName() + " already exists, want to replace it?",
+                            "~ overwrite file", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.YES_NO_CANCEL_OPTION, icon);
                     switch (result) {
                         case JOptionPane.YES_OPTION: super.approveSelection(); return;
                         case JOptionPane.NO_OPTION: return;
@@ -212,7 +211,7 @@ public class Crisp extends JFrame{
         };
 
         fileChooser.setDialogTitle("~ save file");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("PNG (.png)", "png"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("~ PNG (.png)", "png"));
 
         // ~ write out sprite
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -222,7 +221,7 @@ public class Crisp extends JFrame{
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage(), e.getClass().getCanonicalName(), JOptionPane.ERROR_MESSAGE);
             }
-            JOptionPane.showMessageDialog(this, "Font saved at " + file.getAbsolutePath(), "~ file saved", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "~ font saved at " + file.getAbsolutePath(), "~ file saved", JOptionPane.INFORMATION_MESSAGE, icon);
         }
     }
 
