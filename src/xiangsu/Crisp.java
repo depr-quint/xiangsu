@@ -1,3 +1,5 @@
+package xiangsu;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -109,8 +111,8 @@ public class Crisp extends JFrame{
         fontBox.addActionListener(al);
 
         // --- ~ little self-promo ~ --- //
-        String url = "http://www.breachalk.com";
-        credits.setText("Made by Breachalk");
+        String url = "https://github.com/QuintD";
+        credits.setText("Made by 第五");
         credits.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent me) {
                 credits.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -129,7 +131,7 @@ public class Crisp extends JFrame{
                 }
             }
         });
-        credits.setBounds(150, 65 + preview.getHeight(), 300, 40);
+        credits.setBounds(135, 65 + preview.getHeight(), 300, 40);
         credits.setHorizontalAlignment(SwingConstants.RIGHT);
 
         setVisible(true);

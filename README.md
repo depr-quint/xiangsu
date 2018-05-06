@@ -1,14 +1,36 @@
-# Sprite Generator
+# Pixel Font Sprite Generator
+I made this font generator for a project I'm working on in **Java**. I needed a custom font I could use... So instead of trying to figure out how to make an actual font (*.ttf*), I used a sprite sheet.
 
+**SIDE NOTE**: *I'd still like to learn how to make fonts properly. Not only w/ a tool, but also understand how it works/is done. Recommendations (books, articles, ...) welcome!*
+
+If you have recommendations or questions, let me know. I'm pretty sure the code isn't written that well, so there is a lot of room for improvements and additional features.
+
+When you plan to improve the project on your own, I'd like to ask to **open source** it as well (the reason I added a license). Because I would like to check it out and learn from it as well. Thanks.
+
+**NOTE**: Work in progress!  
+
+How to run it from the terminal:
 ```
-javac Crisp.java
+javac xiangsu.Crisp.java
+java xiangsu.Crisp
 ```
 
-```
-java Crisp
-```
+## More possible excitement:
+- [ ] Generate all possible sprites (font and size)
+- [ ] Fine-tune offset and width characters
+- [ ] Layout
+
+## Done!
+
+- [x] Preview the sprite
 
 ## Using the Sprite
+This is how I use(d) the generated sprite.
+
+`fontImage`: used to store the sprite;   
+`int[] offset`: position in sprite (x-axis)  
+`int[] widths`: width of every character
+
 ```
 public class Font {
 
