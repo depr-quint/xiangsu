@@ -111,7 +111,7 @@ public class Crisp extends JFrame{
         fontBox.addActionListener(al);
 
         // --- ~ little self-promo ~ --- //
-        String url = "https://github.com/QuintD";
+        String url = "https://github.com/di-wu";
         credits.setText("Made by 第五");
         credits.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent me) {
